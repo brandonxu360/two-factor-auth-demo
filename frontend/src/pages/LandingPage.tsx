@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './LandingPage.css'
 
 /**
@@ -27,8 +28,13 @@ function LandingPage() {
                 <button onClick={() => handleOAuthSignIn("google")}>Sign in with Google</button>
                 <button onClick={() => handleOAuthSignIn("github")}>Sign in with GitHub</button>
             </div>
-        </div>
 
+            <p>
+                You can try to access the protected resources on the server without being authenticated <br />
+                by navigating directly to the <Link to="/dashboard">Dashboard</Link> page. Normally, this route would also be <br />
+                protected on the frontend, but for the sake of this demo, it is not.
+            </p>
+        </div>
     )
 }
 
