@@ -8,6 +8,7 @@ import './index.css'
 import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import { Toaster } from 'sonner';
+import { fetchCsrfToken } from './utilities/fetchCsrfToken';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,8 @@ const router = createBrowserRouter([
     element: <DashboardPage />,
   }
 ]);
+
+fetchCsrfToken();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
