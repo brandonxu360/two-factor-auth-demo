@@ -22,7 +22,7 @@ function LandingPage() {
                 Welcome to my two-factor authentication demo. This is a simple full-stack application <br />
                 that protects the server resources with two factors of authentication - OAuth2 and OTP. <br />
             </p>
-            
+
             <div className='button-row'>
                 <button onClick={() => handleOAuthSignIn("google")}>Sign in with Google</button>
                 <button onClick={() => handleOAuthSignIn("github")}>Sign in with GitHub</button>

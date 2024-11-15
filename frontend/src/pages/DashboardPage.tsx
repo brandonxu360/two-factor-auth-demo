@@ -1,3 +1,4 @@
+import SecretMessage from '../components/SecretMessage';
 import './DashboardPage.css'
 
 function DashboardPage() {
@@ -9,8 +10,12 @@ function DashboardPage() {
                 You've successfully authenticated with two factors of authentication. <br />
                 You can now access the protected resources on this server. <br />
             </p>
-        </div>
 
+            <SecretMessage />
+
+            <button className='sign-out-button' onClick={() => { }}>Sign out</button>
+
+        </div>
     )
 }
 
