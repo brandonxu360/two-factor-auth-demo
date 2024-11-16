@@ -12,7 +12,7 @@ function LandingPage() {
     const navigate = useNavigate();
 
     /**
-     * Redirects the user to the OAuth2 provider's sign-in page.
+     * Redirects the user to the OAuth2 provider's sign-in page in a popup window.
      * @param provider The OAuth2 provider to sign in with
      */
     function handleOAuthSignIn(provider: string) {
@@ -21,21 +21,26 @@ function LandingPage() {
         // Close the popup when the user is redirected back to the dashboard
         const checkPopup = setInterval(() => {
             try {
+                // Successful OAuth2 sign-in
                 if (popup?.window.location.href.includes('oauth2-success')) {
                     popup?.close()
                     fetchCsrfToken();
                     navigate('/dashboard');
                 }
+
+                // Failed OAuth2 sign-in
                 else if (popup?.window.location.href.includes('oauth2-fail')) {
                     popup?.close()
                 }
-                if (!popup || !popup.closed) return;
+                if (!popup || !popup.closed) {
+                    return
+                }
                 clearInterval(checkPopup);
             }
             catch {
                 // console.error(error);
             }
-            
+
         }, 100);
     }
 
