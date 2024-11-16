@@ -1,6 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom'
 import './LandingPage.css'
 import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
+import { fetchUser } from '../utils/fetchUser';
+import { useUser } from '../context/useUser';
+import { toast } from 'sonner';
 
 /**
  * The landing page, where users can read about the application and
@@ -8,7 +11,7 @@ import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
  * @returns Landing page component
  */
 function LandingPage() {
-
+    const { setUser } = useUser();
     const navigate = useNavigate();
 
     /**
@@ -19,13 +22,16 @@ function LandingPage() {
         const popup = window.open(`http://localhost:8080/oauth2/authorization/${provider}`, `${provider}-sign-in`, 'width=550,height=600');
 
         // Close the popup when the user is redirected back to the dashboard
-        const checkPopup = setInterval(() => {
+        const checkPopup = setInterval(async () => {
             try {
                 // Successful OAuth2 sign-in
                 if (popup?.window.location.href.includes('oauth2-success')) {
                     popup?.close()
                     fetchCsrfToken();
+                    const userData = await fetchUser();
+                    setUser(userData);
                     navigate('/dashboard');
+                    toast.success('Signed in successfully');
                 }
 
                 // Failed OAuth2 sign-in

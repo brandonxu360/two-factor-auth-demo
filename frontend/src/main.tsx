@@ -11,6 +11,7 @@ import { Toaster } from 'sonner';
 import { fetchCsrfToken } from './utilities/fetchCsrfToken';
 import OAuthFail from './pages/OAuthFail';
 import OAuthSuccess from './pages/OAuthSuccess';
+import { UserProvider } from './context/UserProvider';
 
 const router = createBrowserRouter([
   {
@@ -37,8 +38,10 @@ createRoot(document.getElementById('root')!).render(
 
   //<StrictMode>
   <>
-    <Toaster richColors theme='dark' />
-    <RouterProvider router={router} />
+    <UserProvider>
+      <Toaster richColors theme='dark' />
+      <RouterProvider router={router} />
+    </UserProvider>
   </>
   //</StrictMode>,
 )

@@ -4,8 +4,10 @@ import SecretMessage from '../components/SecretMessage';
 import './DashboardPage.css';
 import { toast } from 'sonner';
 import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
+import { useUser } from '../context/useUser';
 
 function DashboardPage() {
+    const { user, setUser } = useUser();
     const navigate = useNavigate();
 
     const handleSignOut = async () => {
@@ -13,6 +15,7 @@ function DashboardPage() {
             const res = await axios.post('http://localhost:8080/logout', {}, { withCredentials: true, withXSRFToken: true });
 
             if (res.status === 200) {
+                setUser(null);
                 toast.success('Signed out successfully');
                 // Refresh the CSRF token after signing out
                 fetchCsrfToken();
@@ -34,6 +37,21 @@ function DashboardPage() {
         <div className="dashboard-page">
             <button className="back-button" onClick={() => navigate(-1)}>Back</button>
             <h1>Dashboard</h1>
+
+            {/* Display user information */}
+            {user ? (
+                <div className="user-info">
+                    {user.imageUrl && <img src={user.imageUrl} alt="Profile" className="profile-picture" />}
+                    <div className="user-details">
+                        <p><strong>Id:</strong> {user.id}</p>
+                        <p><strong>Username:</strong> {user.name}</p>
+                        <p><strong>Provider:</strong> {user.provider}</p>
+                    </div>
+                </div>
+            ) : (
+                <p>User information not available. Please log in.</p>
+            )}
+
             <p>
                 Welcome to the dashboard! If you were successfully authenticated, you <br />
                 should now be able to access the protected resources on this server. <br />
