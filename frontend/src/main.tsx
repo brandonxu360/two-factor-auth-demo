@@ -12,6 +12,7 @@ import { fetchCsrfToken } from './utils/fetchCsrfToken';
 import OAuthFail from './pages/OAuthFail';
 import OAuthSuccess from './pages/OAuthSuccess';
 import { UserProvider } from './context/UserProvider';
+import TotpSetupPage from './pages/TotpSetupPage';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: "/oauth2-success",
     element: <OAuthSuccess />,
+  },
+  {
+    path: "/totp-setup",
+    element: <TotpSetupPage />,
   }
 ]);
 

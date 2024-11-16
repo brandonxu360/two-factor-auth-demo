@@ -63,8 +63,12 @@ function DashboardPage() {
             </p>
 
             <SecretMessage />
-
-            <button className='sign-out-button' onClick={handleSignOut}>Sign out</button>
+            <div className='button-column'>
+                <button onClick={() => navigate('/totp-setup')} disabled={!user}>
+                    {user?.twoFactorEnabled ? 'Disable Two-Factor Authentication' : 'Enable Two-Factor Authentication'}
+                </button>
+                <button onClick={handleSignOut} disabled={!user}>Sign out</button>
+            </div>
         </div>
     );
 }
