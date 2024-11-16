@@ -35,8 +35,8 @@ function DashboardPage() {
             <button className="back-button" onClick={() => navigate(-1)}>Back</button>
             <h1>Dashboard</h1>
             <p>
-                If you were successfully authenticated with two factors of authentication, <br />
-                you should now be able to access the protected resources on this server. <br />
+                Welcome to the dashboard! If you were successfully authenticated, you <br />
+                should now be able to access the protected resources on this server. <br />
             </p>
             <p>
                 Try revealing the secret message below!

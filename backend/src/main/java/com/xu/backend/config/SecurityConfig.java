@@ -49,12 +49,14 @@ public class SecurityConfig {
                         .requestMatchers("/csrf").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login((oauth2) -> oauth2
-                        .defaultSuccessUrl("http://localhost:5173/dashboard")
+                        .defaultSuccessUrl("http://localhost:5173/oauth2-success")
+                        .failureUrl("http://localhost:5173/oauth2-fail")
                 )
                 .logout(logout -> logout
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setStatus(HttpStatus.OK.value());
+                            response.setContentType("text/plain");
                             response.getWriter().println("Logout successful");
                         })
                 )

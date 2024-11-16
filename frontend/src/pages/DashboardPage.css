@@ -6,14 +6,12 @@
     height: 100vh;
     width: 100vw;
     text-align: center;
-    position: relative;
-    padding: 20px;
 }
 
 .back-button {
     position: absolute;
-    top: 120px;
-    left: 120px;
+    top: 8%;
+    left: 5%;
 }
 
 .sign-out-button {

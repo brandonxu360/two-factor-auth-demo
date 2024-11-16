@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './LandingPage.css'
+import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
 
 /**
  * The landing page, where users can read about the application and
@@ -8,12 +9,34 @@ import './LandingPage.css'
  */
 function LandingPage() {
 
+    const navigate = useNavigate();
+
     /**
      * Redirects the user to the OAuth2 provider's sign-in page.
      * @param provider The OAuth2 provider to sign in with
      */
     function handleOAuthSignIn(provider: string) {
-        location.assign(`http://localhost:8080/oauth2/authorization/${provider}`)
+        const popup = window.open(`http://localhost:8080/oauth2/authorization/${provider}`, `${provider}-sign-in`, 'width=550,height=600');
+
+        // Close the popup when the user is redirected back to the dashboard
+        const checkPopup = setInterval(() => {
+            try {
+                if (popup?.window.location.href.includes('oauth2-success')) {
+                    popup?.close()
+                    fetchCsrfToken();
+                    navigate('/dashboard');
+                }
+                else if (popup?.window.location.href.includes('oauth2-fail')) {
+                    popup?.close()
+                }
+                if (!popup || !popup.closed) return;
+                clearInterval(checkPopup);
+            }
+            catch {
+                // console.error(error);
+            }
+            
+        }, 100);
     }
 
     return (
