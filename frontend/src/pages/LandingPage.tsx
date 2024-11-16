@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import './LandingPage.css'
-import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
+import { fetchCsrfToken } from '../utils/fetchCsrfToken';
 import { fetchUser } from '../utils/fetchUser';
 import { useUser } from '../context/useUser';
 import { toast } from 'sonner';

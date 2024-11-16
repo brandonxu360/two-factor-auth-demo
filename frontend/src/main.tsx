@@ -8,7 +8,7 @@ import './index.css'
 import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import { Toaster } from 'sonner';
-import { fetchCsrfToken } from './utilities/fetchCsrfToken';
+import { fetchCsrfToken } from './utils/fetchCsrfToken';
 import OAuthFail from './pages/OAuthFail';
 import OAuthSuccess from './pages/OAuthSuccess';
 import { UserProvider } from './context/UserProvider';

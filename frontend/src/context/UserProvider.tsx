@@ -1,6 +1,6 @@
 import { useState, ReactNode, useEffect } from 'react';
 import { UserContext } from './UserContext';
-import { User } from './User';
+import { User } from '../types/User';
 import { fetchUser } from '../utils/fetchUser';
 
 /**

@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { User } from "./User";
+import { User } from "../types/User";
 
 // The UserContextType interface defines the shape of the UserContext object.
 interface UserContextType {

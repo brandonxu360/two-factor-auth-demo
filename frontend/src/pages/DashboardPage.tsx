@@ -3,7 +3,7 @@ import axios from 'axios';
 import SecretMessage from '../components/SecretMessage';
 import './DashboardPage.css';
 import { toast } from 'sonner';
-import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
+import { fetchCsrfToken } from '../utils/fetchCsrfToken';
 import { useUser } from '../context/useUser';
 
 function DashboardPage() {
@@ -33,6 +33,7 @@ function DashboardPage() {
         }
     };
 
+    console.log(user);
     return (
         <div className="dashboard-page">
             <button className="back-button" onClick={() => navigate(-1)}>Back</button>
@@ -46,6 +47,7 @@ function DashboardPage() {
                         <p><strong>Id:</strong> {user.id}</p>
                         <p><strong>Username:</strong> {user.name}</p>
                         <p><strong>Provider:</strong> {user.provider}</p>
+                        <p><strong>Two-factor enabled:</strong> {String(user.twoFactorEnabled)}</p>
                     </div>
                 </div>
             ) : (

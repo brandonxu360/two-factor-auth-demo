@@ -1,22 +1,23 @@
 package com.xu.backend.model;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Represents a user for the application
+ * Model for OAuth user, DTO that will be converted to UserModel
  */
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-@Entity
-public class UserModel {
+public class OAuthUserModel {
+
     @Id
     private String id;
     private String name;
     private String imageUrl;
     private String provider;
-    private boolean twoFactorEnabled;
+
 }
+
