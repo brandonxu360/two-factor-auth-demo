@@ -20,6 +20,10 @@ public class UserController {
     // Get the user information
     @GetMapping("/user")
     public UserModel getUser(@AuthenticationPrincipal OAuth2User principal, OAuth2AuthenticationToken authToken) {
+        if (principal == null) {
+            return null;
+        }
+
         String id = principal.getName();
         Map<String, Object> attributes = principal.getAttributes();
         String provider = authToken.getAuthorizedClientRegistrationId();

@@ -63,4 +63,14 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Check if two-factor authentication is enabled for a user. If the user does not exist, return false.
+     * @param id The user ID
+     * @return True if two-factor authentication is enabled, false otherwise
+     */
+    public boolean findTwoFactorEnabledById(String id) {
+        Boolean result = userRepository.findTwoFactorEnabledById(id);
+        return result != null && result;
+    }
+
 }

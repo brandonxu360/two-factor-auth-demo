@@ -14,6 +14,8 @@ import OAuthSuccess from './pages/OAuthSuccess';
 import { UserProvider } from './context/UserProvider';
 import TotpSetupPage from './pages/TotpSetupPage';
 
+fetchCsrfToken();
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,8 +38,6 @@ const router = createBrowserRouter([
     element: <TotpSetupPage />,
   }
 ]);
-
-fetchCsrfToken();
 
 createRoot(document.getElementById('root')!).render(
 

@@ -12,7 +12,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fetchUser().then((user) => setUser(user));
+    fetchUser().then((user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
   }, []);
 
   return (
