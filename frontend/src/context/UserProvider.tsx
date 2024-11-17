@@ -19,8 +19,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const refreshUser = async () => {
+    const userData = await fetchUser();
+    setUser(userData);
+  }
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, refreshUser }}>
       {children}
     </UserContext.Provider>
   );

@@ -177,7 +177,7 @@ final class MfaAuthorizationManager implements AuthorizationManager<RequestAutho
         // Enforce MFA
         // Check if the user has been authenticated with MFA (valid session set with mfaAuthenticated attribute)
         HttpSession session = object.getRequest().getSession(false);
-        boolean mfaAuthenticated = (session != null) && (Boolean.TRUE.equals(session.getAttribute("mfaAuthenticated")));
+        boolean mfaAuthenticated = (session != null) && (Boolean.TRUE.equals(session.getAttribute("isTwoFactorAuthenticated")));
 
         // If the user has not been authenticated with MFA, block the request
         return mfaAuthenticated ? new AuthorizationDecision(true) : new AuthorizationDecision(false);
