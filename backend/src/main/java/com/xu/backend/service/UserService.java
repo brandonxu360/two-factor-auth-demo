@@ -55,7 +55,8 @@ public class UserService {
                     oauthUser.getName(),
                     oauthUser.getImageUrl(),
                     oauthUser.getProvider(),
-                    false
+                    false,
+                    null
             );
             userRepository.save(user);
         }

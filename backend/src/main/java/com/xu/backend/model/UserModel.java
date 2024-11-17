@@ -1,5 +1,6 @@
 package com.xu.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
@@ -19,4 +20,5 @@ public class UserModel {
     private String imageUrl;
     private String provider;
     private boolean twoFactorEnabled;
+    private String totpSecret;
 }

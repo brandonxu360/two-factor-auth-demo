@@ -1,6 +1,7 @@
 package com.xu.backend.controller;
 
 import com.xu.backend.model.OAuthUserModel;
+import com.xu.backend.model.UserDTO;
 import com.xu.backend.model.UserModel;
 import com.xu.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserController {
 
     // Get the user information
     @GetMapping("/user")
-    public UserModel getUser(@AuthenticationPrincipal OAuth2User principal, OAuth2AuthenticationToken authToken) {
+    public UserDTO getUser(@AuthenticationPrincipal OAuth2User principal, OAuth2AuthenticationToken authToken) {
         if (principal == null) {
             return null;
         }
@@ -28,6 +29,7 @@ public class UserController {
         Map<String, Object> attributes = principal.getAttributes();
         String provider = authToken.getAuthorizedClientRegistrationId();
 
-        return userService.getUserFromOAuth(id, provider, attributes);
+        UserModel user = userService.getUserFromOAuth(id, provider, attributes);
+        return new UserDTO(user);
     }
 }
