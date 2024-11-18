@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                                 .requestMatchers("/csrf").permitAll()
+                                .requestMatchers("/totp-verify").authenticated() // Allow access to non-MFA authenticated users
                                 .anyRequest().access(new MfaAuthorizationManager(userService))
                         //.requestMatchers("/**").authenticated()
                 ).anonymous(AbstractHttpConfigurer::disable)

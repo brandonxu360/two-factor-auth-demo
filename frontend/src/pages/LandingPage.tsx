@@ -34,6 +34,9 @@ function LandingPage() {
     
                 if (popupUrl.includes('oauth2-success')) {
                     popup.close();
+
+                    // Refresh the CSRF token (new session created)
+                    await fetchCsrfToken();
     
                     const urlParams = new URLSearchParams(new URL(popupUrl).search);
                     const needs2FA = urlParams.get('needs2FA') === 'true';
@@ -43,7 +46,6 @@ function LandingPage() {
                         navigate('/totp-verification');
                     } else {
                         // Fetch user details and navigate to the dashboard
-                        await fetchCsrfToken();
                         const userData = await fetchUser();
                         setUser(userData);
                         navigate('/dashboard');
