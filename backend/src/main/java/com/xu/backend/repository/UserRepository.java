@@ -26,4 +26,10 @@ public interface UserRepository extends JpaRepository<UserModel, String> {
     @Transactional
     @Query("UPDATE UserModel u SET u.twoFactorEnabled = :status WHERE u.id = :id")
     void updateTwoFactorStatus(@Param("id") String id, @Param("status") boolean status);
+
+    // Delete the TOTP secret for the user with the given id.
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserModel u SET u.totpSecret = null WHERE u.id = :id")
+    void deleteTotpSecretById(@Param("id") String id);
 }

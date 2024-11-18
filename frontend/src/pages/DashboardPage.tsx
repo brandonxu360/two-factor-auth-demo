@@ -5,9 +5,10 @@ import './DashboardPage.css';
 import { toast } from 'sonner';
 import { fetchCsrfToken } from '../utils/fetchCsrfToken';
 import { useUser } from '../context/useUser';
+import { useMutation } from '@tanstack/react-query';
 
 function DashboardPage() {
-    const { user, setUser } = useUser();
+    const { user, setUser, refreshUser } = useUser();
     const navigate = useNavigate();
 
     const handleSignOut = async () => {
@@ -30,6 +31,30 @@ function DashboardPage() {
             else {
                 toast.error('Error signing out');
             }
+        }
+    };
+
+    const disableTotpMutation = useMutation({
+        mutationFn: async () => {
+            return axios.post('http://localhost:8080/totp-disable', 
+                {},
+                { withCredentials: true, withXSRFToken: true }
+            );
+        },
+        onSuccess: () => {
+            toast.success('Two-factor authentication disabled');
+            refreshUser();
+        },
+        onError: () => {
+            toast.error('Failed to disable two-factor authentication');
+        }
+    });
+
+    const handleTotpButton = () => {
+        if (user?.twoFactorEnabled) {
+            disableTotpMutation.mutate();
+        } else {
+            navigate('/totp-setup');
         }
     };
 
@@ -64,7 +89,10 @@ function DashboardPage() {
 
             <SecretMessage />
             <div className='button-column'>
-                <button onClick={() => navigate('/totp-setup')} disabled={!user}>
+                <button 
+                    onClick={handleTotpButton} 
+                    disabled={!user || disableTotpMutation.isPending}
+                >
                     {user?.twoFactorEnabled ? 'Disable Two-Factor Authentication' : 'Enable Two-Factor Authentication'}
                 </button>
                 <button onClick={handleSignOut} disabled={!user}>Sign out</button>

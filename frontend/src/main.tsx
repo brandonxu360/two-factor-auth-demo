@@ -13,6 +13,7 @@ import OAuthFail from './pages/OAuthFail';
 import OAuthSuccess from './pages/OAuthSuccess';
 import { UserProvider } from './context/UserProvider';
 import TotpSetupPage from './pages/TotpSetupPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 fetchCsrfToken();
 
@@ -39,14 +40,18 @@ const router = createBrowserRouter([
   }
 ]);
 
+const queryClient = new QueryClient()
+
 createRoot(document.getElementById('root')!).render(
 
   //<StrictMode>
   <>
-    <UserProvider>
-      <Toaster richColors theme='dark' />
-      <RouterProvider router={router} />
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <Toaster richColors theme='dark' />
+        <RouterProvider router={router} />
+      </UserProvider>
+    </QueryClientProvider>
   </>
   //</StrictMode>,
 )

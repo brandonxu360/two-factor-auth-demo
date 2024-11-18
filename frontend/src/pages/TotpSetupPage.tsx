@@ -1,76 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './TotpSetupPage.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/useUser';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 function TotpSetupPage() {
     const { refreshUser } = useUser();
-    const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const [otp, setOtp] = useState('');
-    const [success, setSuccess] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchQrCode = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/totp-setup', { withCredentials: true, responseType: 'blob' });
-                const url = URL.createObjectURL(response.data);
-                setQrCodeUrl(url);
-            } catch {
-                setError('Failed to fetch QR code. Please try again.');
-            }
-        };
+    // Query for fetching QR code
+    const { data: qrCodeUrl, isError } = useQuery({
+        queryKey: ['totpQrCode'],
+        queryFn: async () => {
+            const response = await axios.get('http://localhost:8080/totp-setup',
+                { withCredentials: true, responseType: 'blob' }
+            );
+            return URL.createObjectURL(response.data);
+        }
+    });
 
-        fetchQrCode();
-    }, []);
+    // Mutation for verifying TOTP
+    const verifyMutation = useMutation({
+        mutationFn: async (code: string) => {
+            return axios.post('http://localhost:8080/totp-verify',
+                { code },
+                { withCredentials: true, withXSRFToken: true }
+            );
+        },
+        onSuccess: (response) => {
+            if (response.status === 200 && response.data === true) {
+                refreshUser();
+                toast.success('TOTP setup complete. You will be redirected to the dashboard.');
+                setTimeout(() => {
+                    navigate('/dashboard', { replace: true });
+                }, 2000);
+            }
+            else {
+                toast.error('Verification failed. Please try again.');
+            }
+        },
+        onError: (error) => {
+            console.error('Error verifying TOTP:', error);
+            toast.error('Something went wrong. Please try again.');
+        }
+    });
 
     const handleVerify = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:8080/totp-verify', 
-                { code: otp }, 
-                { withCredentials: true, withXSRFToken: true }
-            );
-            
-            if (response.status === 200 && response.data === true) {
-                refreshUser();
-                setSuccess('TOTP setup complete. You will be redirected to the dashboard.');
-                setTimeout(() => {
-                    navigate('/dashboard');
-                }, 2000);
-            }
-        } catch {
-            setError('TOTP verification failed. Please try again.');
-        }
+        verifyMutation.mutate(otp);
     };
+
+    if (isError) {
+        return <div className="error-message">Failed to fetch QR code. Please try again.</div>;
+    }
 
     return (
         <div className="totp-setup-page">
-            <h2>Set Up Two-Factor Authentication</h2>
-            {error && <p className="error-message">{error}</p>}
-            {success && <p className="success-message">{success}</p>}
-            {qrCodeUrl ? (
-                <div>
+            <div className="totp-setup-container">
+                <h1>Set Up Two-Factor Authentication</h1>
+
+                <div className="qr-code-container">
                     <p>Scan the QR code below with your authenticator app:</p>
-                    <img src={qrCodeUrl} alt="QR Code" />
+                    {qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" /> : <div className="loading">Loading...</div>}
                 </div>
-            ) : (
-                <p>Loading QR code...</p>
-            )}
-            <form onSubmit={handleVerify}>
-                <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="Enter OTP"
-                    required
-                />
-                <button type="submit">Verify</button>
-            </form>
+
+                <form onSubmit={handleVerify}>
+                    <input
+                        className="totp-input"
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="Enter verification code"
+                        maxLength={6}
+                        required
+                    />
+                    <button
+                        className="verify-button"
+                        type="submit"
+                        disabled={verifyMutation.isPending}
+                    >
+                        Verify
+                    </button>
+                </form>
+            </div>
         </div>
-    )
+    );
 }
 
 export default TotpSetupPage;

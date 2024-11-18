@@ -30,19 +30,34 @@ public class TotpController {
     // Verify the TOTP code for the user with the given ID
     @PostMapping("/totp-verify")
     public boolean verifyTotp(@AuthenticationPrincipal OAuth2User principal, @RequestBody Map<String, String> requestBody, HttpServletRequest request) {
-        String id = principal.getName();
-        int code = Integer.parseInt(requestBody.get("code"));
-        boolean verified =  totpService.verifyTotpSetup(id, code);
+        try {
+            String id = principal.getName();
+            int code = Integer.parseInt(requestBody.get("code"));
+            boolean verified =  totpService.verifyTotpSetup(id, code);
 
-        if (verified) {
-            // If the TOTP code is verified, save the secret enable two-factor authentication for the user
-            totpService.saveTotpSecret(id);
-            totpService.updateTwoFactorStatus(id, true);
+            if (verified) {
+                // If the TOTP code is verified, save the secret enable two-factor authentication for the user
+                totpService.saveTotpSecret(id);
+                totpService.updateTwoFactorStatus(id, true);
 
-            // Set the current session as two-factor authenticated
-            request.getSession().setAttribute("isTwoFactorAuthenticated", true);
+                // Set the current session as two-factor authenticated
+                request.getSession().setAttribute("isTwoFactorAuthenticated", true);
+            }
+
+            return verified;
+        } catch (NumberFormatException e) {
+            return false;
         }
+    }
 
-        return verified;
+    // Disable two-factor authentication for the user with the given ID
+    @PostMapping("/totp-disable")
+    public void disableTotp(@AuthenticationPrincipal OAuth2User principal, HttpServletRequest request) {
+        String id = principal.getName();
+        totpService.deleteTotpSecret(id); // Maybe keep, but disable two-factor authentication
+        totpService.updateTwoFactorStatus(id, false);
+
+        // Set the current session as not two-factor authenticated
+        request.getSession().setAttribute("isTwoFactorAuthenticated", false);
     }
 }

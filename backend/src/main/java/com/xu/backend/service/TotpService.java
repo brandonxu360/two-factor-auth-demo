@@ -2,6 +2,7 @@ package com.xu.backend.service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.io.IOException;
 
 @Service
@@ -43,9 +45,10 @@ public class TotpService {
             BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 200, 200);
 
             // Write the QR code image to the response
+            MatrixToImageConfig config = new MatrixToImageConfig(Color.WHITE.getRGB(), Color.BLACK.getRGB()); // White squares on black background
             response.setContentType("image/png");
             ServletOutputStream outputStream = response.getOutputStream();
-            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream, config);
             outputStream.close();
         } catch (WriterException | IOException e) {
             // If an error occurs, send an internal server error response
@@ -61,6 +64,10 @@ public class TotpService {
     public void saveTotpSecret(String id) {
         String secret = googleAuthenticator.getCredentialRepository().getSecretKey(id);
         userRepository.saveTotpSecretById(id, secret);
+    }
+
+    public void deleteTotpSecret(String id) {
+        userRepository.deleteTotpSecretById(id);
     }
 
     public void updateTwoFactorStatus(String id, boolean status) {
