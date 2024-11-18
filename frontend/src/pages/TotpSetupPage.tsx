@@ -25,7 +25,7 @@ function TotpSetupPage() {
     // Mutation for verifying TOTP
     const verifyMutation = useMutation({
         mutationFn: async (code: string) => {
-            return axios.post('http://localhost:8080/totp-verify',
+            return axios.post('http://localhost:8080/totp-verify-setup',
                 { code },
                 { withCredentials: true, withXSRFToken: true }
             );

@@ -14,6 +14,7 @@ import OAuthSuccess from './pages/OAuthSuccess';
 import { UserProvider } from './context/UserProvider';
 import TotpSetupPage from './pages/TotpSetupPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import TotpVerifyPage from './pages/TotpVerifyPage';
 
 fetchCsrfToken();
 
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: "/totp-setup",
     element: <TotpSetupPage />,
+  },
+  {
+    path: "/totp-verification",
+    element: <TotpVerifyPage />,
   }
 ]);
 

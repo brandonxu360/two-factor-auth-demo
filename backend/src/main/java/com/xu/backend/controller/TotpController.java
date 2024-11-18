@@ -27,19 +27,38 @@ public class TotpController {
         totpService.getTotpQRSetup(id, response);
     }
 
+    // Verify the TOTP first-time setup for the user with the given ID
+    @PostMapping("/totp-verify-setup")
+    public boolean verifyTotpSetup(@AuthenticationPrincipal OAuth2User principal, @RequestBody Map<String, String> requestBody, HttpServletRequest request) {
+        try {
+            String id = principal.getName();
+            int code = Integer.parseInt(requestBody.get("code"));
+            boolean verified = totpService.verifyTotpSetup(id, code);
+
+            if (verified) {
+                // If the TOTP code is verified, save the secret and enable two-factor authentication for the user
+                totpService.saveTotpSecret(id);
+                totpService.updateTwoFactorStatus(id, true);
+
+                // Set the current session as two-factor authenticated
+                request.getSession().setAttribute("isTwoFactorAuthenticated", true);
+            }
+
+            return verified;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     // Verify the TOTP code for the user with the given ID
     @PostMapping("/totp-verify")
     public boolean verifyTotp(@AuthenticationPrincipal OAuth2User principal, @RequestBody Map<String, String> requestBody, HttpServletRequest request) {
         try {
             String id = principal.getName();
             int code = Integer.parseInt(requestBody.get("code"));
-            boolean verified =  totpService.verifyTotpSetup(id, code);
+            boolean verified = totpService.verifyTotpSetup(id, code);
 
             if (verified) {
-                // If the TOTP code is verified, save the secret enable two-factor authentication for the user
-                totpService.saveTotpSecret(id);
-                totpService.updateTwoFactorStatus(id, true);
-
                 // Set the current session as two-factor authenticated
                 request.getSession().setAttribute("isTwoFactorAuthenticated", true);
             }
