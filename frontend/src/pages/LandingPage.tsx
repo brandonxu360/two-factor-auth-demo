@@ -25,27 +25,36 @@ function LandingPage() {
         // Close the popup when the user is redirected back to the dashboard
         const checkPopup = setInterval(async () => {
             try {
-                // Successful OAuth2 sign-in
-                if (popup?.window.location.href.includes('oauth2-success')) {
-                    popup?.close()
-                    fetchCsrfToken();
-                    const userData = await fetchUser();
-                    setUser(userData);
-                    navigate('/dashboard');
-                    toast.success('Signed in successfully');
+                if (!popup || popup.closed) {
+                    clearInterval(checkPopup);
+                    return;
                 }
-
-                // Failed OAuth2 sign-in
-                else if (popup?.window.location.href.includes('oauth2-fail')) {
-                    popup?.close()
+    
+                const popupUrl = popup.location.href;
+    
+                if (popupUrl.includes('oauth2-success')) {
+                    popup.close();
+    
+                    const urlParams = new URLSearchParams(new URL(popupUrl).search);
+                    const needs2FA = urlParams.get('needs2FA') === 'true';
+    
+                    if (needs2FA) {
+                        // Redirect to the 2FA page
+                        navigate('/totp-verification');
+                    } else {
+                        // Fetch user details and navigate to the dashboard
+                        await fetchCsrfToken();
+                        const userData = await fetchUser();
+                        setUser(userData);
+                        navigate('/dashboard');
+                        toast.success('Signed in successfully');
+                    }
+                } else if (popupUrl.includes('oauth2-fail')) {
+                    popup.close();
+                    toast.error('OAuth sign-in failed');
                 }
-                if (!popup || !popup.closed) {
-                    return
-                }
-                clearInterval(checkPopup);
-            }
-            catch {
-                // console.error(error);
+            } catch {
+                // Popup location access error; ignore
             }
 
         }, 100);

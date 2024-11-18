@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.*;
@@ -63,7 +64,7 @@ public class SecurityConfig {
                         //.requestMatchers("/**").authenticated()
                 ).anonymous(AbstractHttpConfigurer::disable)
                 .oauth2Login((oauth2) -> oauth2
-                        .defaultSuccessUrl("http://localhost:5173/oauth2-success")
+                        .successHandler(new CustomOAuth2SuccessHandler(userService))
                         .failureUrl("http://localhost:5173/oauth2-fail")
                 )
                 //.addFilterAfter(new MfaFilter(userService), BasicAuthenticationFilter.class)
@@ -90,6 +91,29 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint unauthorizedEntryPoint() {
         return new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
+    }
+}
+
+/**
+ * A custom implementation of AuthenticationSuccessHandler that redirects the user to the
+ * OAuth2 success URL after successful authentication. The URL will indicate whether the
+ * user needs to be authenticated with MFA.
+ */
+@RequiredArgsConstructor
+final class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
+
+    private final UserService userService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        String userId = authentication.getName();
+        boolean is2FAEnabled = userService.findTwoFactorEnabledById(userId);
+
+        if (is2FAEnabled) {
+            response.sendRedirect("http://localhost:5173/oauth2-success?needs2FA=true");
+        } else {
+            response.sendRedirect("http://localhost:5173/oauth2-success?needs2FA=false");
+        }
     }
 }
 
