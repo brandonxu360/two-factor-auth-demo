@@ -8,10 +8,15 @@ import './index.css'
 import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import { Toaster } from 'sonner';
-import { fetchCsrfToken } from './utilities/fetchCsrfToken';
+import { fetchCsrfToken } from './utils/fetchCsrfToken';
 import OAuthFail from './pages/OAuthFail';
 import OAuthSuccess from './pages/OAuthSuccess';
 import { UserProvider } from './context/UserProvider';
+import TotpSetupPage from './pages/TotpSetupPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import TotpVerifyPage from './pages/TotpVerifyPage';
+
+fetchCsrfToken();
 
 const router = createBrowserRouter([
   {
@@ -29,19 +34,29 @@ const router = createBrowserRouter([
   {
     path: "/oauth2-success",
     element: <OAuthSuccess />,
+  },
+  {
+    path: "/totp-setup",
+    element: <TotpSetupPage />,
+  },
+  {
+    path: "/totp-verification",
+    element: <TotpVerifyPage />,
   }
 ]);
 
-fetchCsrfToken();
+const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
 
   //<StrictMode>
   <>
-    <UserProvider>
-      <Toaster richColors theme='dark' />
-      <RouterProvider router={router} />
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <Toaster richColors theme='dark' />
+        <RouterProvider router={router} />
+      </UserProvider>
+    </QueryClientProvider>
   </>
   //</StrictMode>,
 )

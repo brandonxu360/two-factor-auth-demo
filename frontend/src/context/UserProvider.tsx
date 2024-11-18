@@ -1,6 +1,6 @@
 import { useState, ReactNode, useEffect } from 'react';
 import { UserContext } from './UserContext';
-import { User } from './User';
+import { User } from '../types/User';
 import { fetchUser } from '../utils/fetchUser';
 
 /**
@@ -12,11 +12,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fetchUser().then((user) => setUser(user));
+    fetchUser().then((user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
   }, []);
 
+  const refreshUser = async () => {
+    const userData = await fetchUser();
+    setUser(userData);
+  }
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, refreshUser }}>
       {children}
     </UserContext.Provider>
   );

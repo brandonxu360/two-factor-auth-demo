@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import './LandingPage.css'
-import { fetchCsrfToken } from '../utilities/fetchCsrfToken';
+import { fetchCsrfToken } from '../utils/fetchCsrfToken';
 import { fetchUser } from '../utils/fetchUser';
 import { useUser } from '../context/useUser';
 import { toast } from 'sonner';
@@ -15,7 +15,8 @@ function LandingPage() {
     const navigate = useNavigate();
 
     /**
-     * Redirects the user to the OAuth2 provider's sign-in page in a popup window.
+     * Redirects the user to the OAuth2 provider's sign-in page in a popup window. 
+     * Then closes the popup and determines where to redirect the user based on the result.
      * @param provider The OAuth2 provider to sign in with
      */
     function handleOAuthSignIn(provider: string) {
@@ -24,27 +25,38 @@ function LandingPage() {
         // Close the popup when the user is redirected back to the dashboard
         const checkPopup = setInterval(async () => {
             try {
-                // Successful OAuth2 sign-in
-                if (popup?.window.location.href.includes('oauth2-success')) {
-                    popup?.close()
-                    fetchCsrfToken();
-                    const userData = await fetchUser();
-                    setUser(userData);
-                    navigate('/dashboard');
-                    toast.success('Signed in successfully');
+                if (!popup || popup.closed) {
+                    clearInterval(checkPopup);
+                    return;
                 }
+    
+                const popupUrl = popup.location.href;
+    
+                if (popupUrl.includes('oauth2-success')) {
+                    popup.close();
 
-                // Failed OAuth2 sign-in
-                else if (popup?.window.location.href.includes('oauth2-fail')) {
-                    popup?.close()
+                    // Refresh the CSRF token (new session created)
+                    await fetchCsrfToken();
+    
+                    const urlParams = new URLSearchParams(new URL(popupUrl).search);
+                    const needs2FA = urlParams.get('needs2FA') === 'true';
+    
+                    if (needs2FA) {
+                        // Redirect to the 2FA page
+                        navigate('/totp-verification');
+                    } else {
+                        // Fetch user details and navigate to the dashboard
+                        const userData = await fetchUser();
+                        setUser(userData);
+                        navigate('/dashboard');
+                        toast.success('Signed in successfully');
+                    }
+                } else if (popupUrl.includes('oauth2-fail')) {
+                    popup.close();
+                    toast.error('OAuth sign-in failed');
                 }
-                if (!popup || !popup.closed) {
-                    return
-                }
-                clearInterval(checkPopup);
-            }
-            catch {
-                // console.error(error);
+            } catch {
+                // Popup location access error; ignore
             }
 
         }, 100);
@@ -55,7 +67,7 @@ function LandingPage() {
             <h1>Two-Factor Authentication Demo</h1>
             <p>
                 Welcome to my two-factor authentication demo. This is a simple full-stack application <br />
-                that protects the server resources with two factors of authentication - OAuth2 and OTP. <br />
+                that protects the server resources with two factors of authentication - OAuth2 and TOTP. <br />
             </p>
 
             <div className='button-row'>

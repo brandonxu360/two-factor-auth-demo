@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -35,6 +39,10 @@ h1 {
   line-height: 1.1;
 }
 
+input {
+  box-sizing: border-box;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -52,6 +60,18 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
+button:disabled:hover {
+  border-color: #444;
+  background-color: #2a2a2a;
 }
 
 @media (prefers-color-scheme: light) {
