@@ -15,7 +15,8 @@ function LandingPage() {
     const navigate = useNavigate();
 
     /**
-     * Redirects the user to the OAuth2 provider's sign-in page in a popup window.
+     * Redirects the user to the OAuth2 provider's sign-in page in a popup window. 
+     * Then closes the popup and determines where to redirect the user based on the result.
      * @param provider The OAuth2 provider to sign in with
      */
     function handleOAuthSignIn(provider: string) {

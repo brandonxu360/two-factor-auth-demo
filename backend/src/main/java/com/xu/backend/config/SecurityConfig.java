@@ -58,7 +58,7 @@ public class SecurityConfig {
                 )
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                                .requestMatchers("/csrf", "/user").permitAll()
+                                .requestMatchers("/csrf").permitAll()
                                 .anyRequest().access(new MfaAuthorizationManager(userService))
                         //.requestMatchers("/**").authenticated()
                 ).anonymous(AbstractHttpConfigurer::disable)

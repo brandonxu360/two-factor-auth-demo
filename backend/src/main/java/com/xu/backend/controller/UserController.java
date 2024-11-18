@@ -1,6 +1,5 @@
 package com.xu.backend.controller;
 
-import com.xu.backend.model.OAuthUserModel;
 import com.xu.backend.model.UserDTO;
 import com.xu.backend.model.UserModel;
 import com.xu.backend.service.UserService;
@@ -21,10 +20,6 @@ public class UserController {
     // Get the user information
     @GetMapping("/user")
     public UserDTO getUser(@AuthenticationPrincipal OAuth2User principal, OAuth2AuthenticationToken authToken) {
-        if (principal == null) {
-            return null;
-        }
-
         String id = principal.getName();
         Map<String, Object> attributes = principal.getAttributes();
         String provider = authToken.getAuthorizedClientRegistrationId();
