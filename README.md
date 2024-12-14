@@ -1,11 +1,16 @@
 # two-factor-auth-demo
 A demo full-stack application with two-factor authentication to protect endpoints using a Spring Boot + Spring Security backend and a React frontend.
 
+## Tech Stack
+
+- **Backend**: Spring Boot, Spring Security
+- **Frontend**: React, TypeScript, Vite
+
 ## Two-Factor Authentication Implementation
 
 This application uses Spring Security with a custom authorization manager to protect endpoints with two-factor authentication (2FA). The two factors of authentication are:
 - **Social Login** (OAuth) with Google or Github
-- **Time-based One-time Password (TOTP)** with the algorithm specified in RFC 6238.
+- **Time-based One-time Password (TOTP)** with the algorithm specified in RFC 6238, implemented using [GoogleAuth](https://github.com/wstrange/GoogleAuth).
 
 ### Key Components
 
@@ -30,6 +35,7 @@ This application uses Spring Security with a custom authorization manager to pro
 - Java (21 or higher recommended)
 - Node.js (22.11.0 or higher recommended)
 - npm
+- Google Authenticator app for scanning QR codes and generating TOTP codes.
 
 ### Backend Setup
 
